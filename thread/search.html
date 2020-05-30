@@ -1,3 +1,5 @@
+<p><span id=loading>Loading search index... please wait a few seconds</span>
+
 <p><input id="search" type="text" placeholder="type something here"></p>
 
 <ul id="results"></ul>
@@ -29,10 +31,12 @@ function initLunr() {
         });
         download("lunrindex.json",JSON.stringify(lunrIndex));
 */
+        if (lunrIndex) $('span#loading').hide();
     })
   $.getJSON("lunrindex.json")
     .done(function(index) {
       lunrIndex = lunr.Index.load(index);
+      if (documents) $('span#loading').hide();
   });
 }
 function download(filename, text) {
