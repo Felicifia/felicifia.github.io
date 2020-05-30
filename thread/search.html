@@ -1,0 +1,104 @@
+<p><input id="search" type="text" placeholder="type something here"></p>
+
+<ul id="results"></ul>
+
+<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+<script>
+var lunrIndex,
+    $results,
+    documents;
+
+function initLunr() {
+  $.getJSON("index.json")
+    .done(function(index) {
+        documents = index;
+/*
+        lunrIndex = lunr(function(){
+          this.ref('id');
+          this.field('body');
+          this.field('title');
+          this.field('author');
+          this.field('date');
+
+          documents.forEach(function(doc) {
+            try {
+              this.add(doc)
+            } catch (e) {}
+          }, this)
+        });
+        download("lunrindex.json",JSON.stringify(lunrIndex));
+*/
+    })
+  $.getJSON("lunrindex.json")
+    .done(function(index) {
+      lunrIndex = lunr.Index.load(index);
+  });
+}
+function download(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+function search(query) {
+  return lunrIndex.search(query).map(function(result) {
+    return documents.filter(function(page) {
+      try {
+        return page.id === result.ref;
+      } catch (e) {
+        console.log('whoops')
+      }
+    })[0];
+  });
+}
+
+function renderResults(results) {
+  if (!results.length) {
+    return;
+  }
+  // show first ten results
+  results.slice(0, 10).forEach(function(result) {
+    var $result = $("<li><details open><summary>").find("details");
+
+    $result.find("summary").append($("<a>", {
+      href: result.id,
+      text: result.title + " by " + result.author + " on " + result.date
+    }));
+    $result.append($("<div>", {html: result.body}));
+
+    $results.append($result);
+  });
+}
+
+function initUI() {
+  $results = $("#results");
+
+  $("#search").keyup(function(){
+    // empty previous results
+    $results.empty();
+
+    // trigger search when at least two chars provided.
+    var query = $(this).val();
+    if (query.length < 2) {
+      return;
+    }
+
+    var results = search(query);
+
+    renderResults(results);
+  });
+}
+
+initLunr();
+
+$(document).ready(function(){
+  initUI();
+});
+</script>
