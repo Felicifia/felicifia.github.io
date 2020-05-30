@@ -1,5 +1,0 @@
-.hidden{display:none}
-.sort:not(.active) span::after{color:lightgreen}
-.sort.active span::after{color:orange}
-.sort:not(.asc) span::after{content: "\00a0↑\00a0\00a0";font-size:larger;}
-.sort.asc span::after{content: "\00a0↓\00a0\00a0";font-size:larger;}
