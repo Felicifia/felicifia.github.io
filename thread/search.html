@@ -68,7 +68,7 @@ function renderResults(results) {
     var $result = $("<li><details open><summary>").find("details");
 
     $result.find("summary").append($("<a>", {
-      href: result.id,
+      href: result.id.replace("#","#p"),
       text: result.title + " by " + result.author + " on " + result.date
     }));
     $result.append($("<div>", {html: result.body}));
